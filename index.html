@@ -1,1 +1,955 @@
-index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CENA IV — The Aero Arcology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  :root {
+    --sky: #4FA8E0;
+    --sky-deep: #2C7BB4;
+    --sky-light: #B8DCF0;
+    --sky-pale: #E8F4FA;
+    --white: #F8FAFB;
+    --white-warm: #EEF2F3;
+    --white-shadow: #C8D0D2;
+    --grass: #4FBE73;
+    --grass-deep: #2D8E4A;
+    --grass-light: #7DD99A;
+    --water: #7AC8E8;
+    --sand: #E8D9B0;
+    --ink: #152228;
+    --ink-soft: #2D3E47;
+    --ink-mid: #5A6E78;
+    --accent: #4FA8E0;
+    --accent-warm: #E8B584;
+  }
+  
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--white);
+    color: var(--ink);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  .font-display { font-family: 'Cormorant Garamond', serif; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+  
+  /* === NAV === */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 1.4rem 2.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    transition: all 0.4s ease;
+    color: var(--ink);
+  }
+  .nav.scrolled {
+    background: rgba(248,250,251,0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding: 1rem 2.5rem;
+    border-bottom: 1px solid rgba(21,34,40,0.08);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem; font-weight: 500;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .nav-logo em { font-style: italic; font-weight: 300; }
+  .nav-logo-dot {
+    width: 7px; height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.3); }
+  }
+  .nav-links {
+    display: flex; gap: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .nav-links a {
+    text-decoration: none; color: inherit;
+    opacity: 0.65; transition: opacity 0.3s;
+  }
+  .nav-links a:hover { opacity: 1; }
+  .nav-cta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 0.65rem 1.2rem;
+    border: 1px solid var(--ink);
+    border-radius: 2px;
+    cursor: pointer; background: transparent;
+    color: var(--ink); transition: all 0.3s;
+  }
+  .nav-cta:hover { background: var(--ink); color: var(--white); }
+  @media (max-width: 768px) {
+    .nav { padding: 1.1rem 1.3rem; }
+    .nav-links { display: none; }
+  }
+  
+  /* === HERO === */
+  .hero {
+    position: relative; height: 100vh; min-height: 700px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #2C7BB4 0%, #4FA8E0 40%, #B8DCF0 100%);
+  }
+  .hero-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+  .hero-overlay {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, rgba(44,123,180,0.2) 0%, transparent 30%, transparent 80%, rgba(21,34,40,0.25) 100%);
+    z-index: 1;
+  }
+  .hero-ui {
+    position: relative; z-index: 10; height: 100%;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 5.5rem 2.5rem 2.2rem; pointer-events: none;
+  }
+  .hero-ui > * { pointer-events: auto; }
+  .hero-title-block { max-width: 900px; }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.28em;
+    text-transform: uppercase; color: var(--ink);
+    margin-bottom: 1.4rem;
+    display: flex; align-items: center; gap: 1rem;
+    opacity: 0.85;
+  }
+  .hero-eyebrow::before {
+    content: ''; width: 44px; height: 1px; background: var(--ink);
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(3.2rem, 9vw, 8rem);
+    line-height: 0.88; letter-spacing: -0.025em;
+    color: var(--ink); margin: 0;
+    text-shadow: 0 2px 20px rgba(255,255,255,0.3);
+  }
+  .hero-title em { font-style: italic; font-weight: 400; }
+  .hero-subtitle {
+    font-weight: 300; font-size: clamp(0.95rem, 1.05vw, 1.05rem);
+    line-height: 1.65; color: var(--ink-soft);
+    max-width: 420px; margin-top: 1.8rem;
+  }
+  .hero-hud {
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem;
+  }
+  .hud-coords {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; color: var(--ink); line-height: 2;
+    background: rgba(248,250,251,0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 0.9rem 1.2rem;
+    border: 1px solid rgba(21,34,40,0.15);
+    border-radius: 2px; min-width: 210px;
+  }
+  .hud-coords-row {
+    display: flex; justify-content: space-between; gap: 1rem;
+  }
+  .hud-coords-row span:first-child { opacity: 0.5; letter-spacing: 0.1em; }
+  .hud-coords-row span:last-child { font-weight: 500; }
+  .hud-scroll {
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--ink); opacity: 0.7;
+  }
+  .hud-scroll-line {
+    width: 1px; height: 44px;
+    background: rgba(21,34,40,0.2);
+    position: relative; overflow: hidden;
+  }
+  .hud-scroll-line::after {
+    content: ''; position: absolute; top: -50%; left: 0;
+    width: 100%; height: 50%; background: var(--ink);
+    animation: scrollDown 2.5s ease-in-out infinite;
+  }
+  @keyframes scrollDown {
+    0% { top: -50%; } 100% { top: 100%; }
+  }
+  .scan-sweep {
+    position: absolute; left: 0; width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(79,168,224,0.7) 50%, transparent 100%);
+    pointer-events: none; z-index: 5;
+    box-shadow: 0 0 18px rgba(79,168,224,0.4);
+    animation: scanSweep 12s ease-in-out infinite;
+  }
+  @keyframes scanSweep {
+    0%, 100% { top: 15%; opacity: 0; }
+    8% { opacity: 0.8; }
+    50% { top: 85%; opacity: 0.8; }
+    58% { opacity: 0; }
+  }
+  
+  /* === SECTIONS === */
+  .section { padding: 7rem 2.5rem; position: relative; }
+  @media (max-width: 768px) { .section { padding: 4.5rem 1.3rem; } }
+  .section-inner { max-width: 1300px; margin: 0 auto; }
+  .section-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 1.3rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .section-eyebrow::before {
+    content: ''; width: 32px; height: 1px; background: var(--accent);
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(2.3rem, 5vw, 4.5rem);
+    line-height: 1; letter-spacing: -0.025em;
+    color: var(--ink); margin: 0 0 1.5rem 0;
+    max-width: 850px;
+  }
+  .section-title em { font-style: italic; font-weight: 400; }
+  .section-desc {
+    font-size: 1rem; line-height: 1.7;
+    color: var(--ink-soft); max-width: 600px;
+    font-weight: 300;
+  }
+  
+  /* === PILLARS === */
+  .pillars { background: var(--white); }
+  .pillar-grid {
+    max-width: 1300px; margin: 4rem auto 0;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid rgba(21,34,40,0.12);
+    border-bottom: 1px solid rgba(21,34,40,0.12);
+  }
+  @media (max-width: 900px) { .pillar-grid { grid-template-columns: repeat(2, 1fr); } }
+  .pillar {
+    padding: 2.5rem 1.8rem;
+    border-right: 1px solid rgba(21,34,40,0.12);
+    position: relative; transition: background 0.4s;
+    overflow: hidden;
+  }
+  .pillar:last-child { border-right: none; }
+  @media (max-width: 900px) {
+    .pillar:nth-child(2) { border-right: none; }
+    .pillar:nth-child(1), .pillar:nth-child(2) { border-bottom: 1px solid rgba(21,34,40,0.12); }
+  }
+  .pillar:hover { background: var(--white-warm); }
+  .pillar-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; color: var(--accent);
+    letter-spacing: 0.2em; margin-bottom: 2rem;
+  }
+  .pillar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem; font-weight: 400;
+    line-height: 1.05; margin-bottom: 0.9rem;
+    color: var(--ink);
+  }
+  .pillar-title em { font-style: italic; }
+  .pillar-desc {
+    font-size: 0.88rem; line-height: 1.6;
+    color: var(--ink-soft); font-weight: 300;
+  }
+  .pillar::after {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 0; height: 2px; background: var(--accent);
+    transition: width 0.5s ease;
+  }
+  .pillar:hover::after { width: 100%; }
+  
+  /* === WORLD / BIOMES === */
+  .world {
+    background: linear-gradient(180deg, var(--white) 0%, var(--sky-pale) 100%);
+  }
+  .biome-grid {
+    max-width: 1300px; margin: 4rem auto 0;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.3rem;
+  }
+  @media (max-width: 768px) { .biome-grid { grid-template-columns: 1fr; } }
+  .biome {
+    position: relative; border: 1px solid rgba(21,34,40,0.12);
+    border-radius: 3px; overflow: hidden;
+    background: var(--white);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .biome:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px -12px rgba(21,34,40,0.18);
+    border-color: rgba(79,168,224,0.4);
+  }
+  .biome-img {
+    width: 100%; height: 220px;
+    background: var(--sky-light);
+    display: block; object-fit: cover;
+    border-bottom: 1px solid rgba(21,34,40,0.08);
+  }
+  .biome-body { padding: 1.8rem; }
+  .biome-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 0.7rem;
+  }
+  .biome-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 400;
+    line-height: 1; margin-bottom: 0.8rem;
+    color: var(--ink);
+  }
+  .biome-name em { font-style: italic; }
+  .biome-desc {
+    font-size: 0.88rem; line-height: 1.6;
+    color: var(--ink-soft); margin-bottom: 1.4rem;
+    font-weight: 300;
+  }
+  .biome-stats {
+    display: flex; gap: 1.6rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(21,34,40,0.1);
+  }
+  .biome-stat-label {
+    color: var(--ink-soft); opacity: 0.55;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    font-size: 0.58rem; margin-bottom: 0.25rem;
+  }
+  .biome-stat-value {
+    color: var(--ink); font-weight: 500; font-size: 0.75rem;
+  }
+  
+  /* === DUNGEONS === */
+  .dungeons {
+    background: #0E1820; color: var(--white);
+    position: relative; overflow: hidden;
+  }
+  .dungeons::before {
+    content: ''; position: absolute; inset: 0;
+    background: 
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(79,168,224,0.14) 0%, transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(122,200,232,0.06) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .dungeons .section-title { color: var(--white); }
+  .dungeons .section-desc { color: rgba(248,250,251,0.65); }
+  .dungeons .section-eyebrow { color: var(--water); }
+  .dungeons .section-eyebrow::before { background: var(--water); }
+  .dungeon-stage {
+    max-width: 1300px; margin: 4rem auto 0;
+    position: relative; border: 1px solid rgba(248,250,251,0.12);
+    border-radius: 4px; overflow: hidden;
+    background: #08121A;
+  }
+  .dungeon-img {
+    width: 100%; height: 480px;
+    display: block; object-fit: cover;
+    background: linear-gradient(180deg, #1A2A35 0%, #08121A 100%);
+  }
+  .dungeon-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(8,18,26,0.85) 100%);
+    pointer-events: none;
+  }
+  .dungeon-info {
+    position: absolute; bottom: 2rem; left: 2rem;
+    z-index: 5; max-width: 380px;
+  }
+  .dungeon-info-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--water);
+    margin-bottom: 0.7rem;
+  }
+  .dungeon-info-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem; font-weight: 400;
+    line-height: 1; color: var(--white);
+    margin-bottom: 0.7rem;
+  }
+  .dungeon-info-title em { font-style: italic; }
+  .dungeon-info-desc {
+    font-size: 0.86rem; line-height: 1.6;
+    color: rgba(248,250,251,0.55); font-weight: 300;
+  }
+  .dungeon-readout {
+    position: absolute; top: 2rem; right: 2rem;
+    z-index: 5;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: rgba(248,250,251,0.6);
+    text-align: right; line-height: 2;
+  }
+  .dungeon-readout span { color: var(--water); }
+  
+  /* === TRAVERSAL === */
+  .traversal { background: var(--white); }
+  .tool-grid {
+    max-width: 1300px; margin: 4rem auto 0;
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 1px; background: rgba(21,34,40,0.12);
+    border: 1px solid rgba(21,34,40,0.12);
+  }
+  @media (max-width: 768px) { .tool-grid { grid-template-columns: 1fr; } }
+  .tool {
+    background: var(--white);
+    padding: 2.5rem 2rem;
+    display: flex; gap: 1.8rem; align-items: flex-start;
+    transition: background 0.4s;
+  }
+  .tool:hover { background: var(--white-warm); }
+  .tool-icon {
+    flex-shrink: 0; width: 64px; height: 64px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--ink); border-radius: 50%;
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: var(--ink);
+  }
+  .tool:hover .tool-icon {
+    background: var(--accent); border-color: var(--accent);
+    color: var(--white); transform: rotate(-12deg) scale(1.05);
+  }
+  .tool-icon svg {
+    width: 28px; height: 28px;
+    stroke: currentColor; stroke-width: 1.4;
+    fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .tool-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 0.7rem;
+  }
+  .tool-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.9rem; font-weight: 400;
+    line-height: 1.05; margin-bottom: 0.9rem;
+    color: var(--ink);
+  }
+  .tool-name em { font-style: italic; }
+  .tool-desc {
+    font-size: 0.9rem; line-height: 1.6;
+    color: var(--ink-soft); font-weight: 300;
+  }
+  
+  /* === GALLERY === */
+  .gallery { background: var(--sky-pale); }
+  .gallery-grid {
+    max-width: 1300px; margin: 4rem auto 0;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  @media (max-width: 768px) { .gallery-grid { grid-template-columns: 1fr; } }
+  .gallery-item {
+    aspect-ratio: 4/5;
+    overflow: hidden; border-radius: 3px;
+    background: var(--sky-light);
+    position: relative;
+    border: 1px solid rgba(21,34,40,0.1);
+  }
+  .gallery-item:nth-child(2) { aspect-ratio: 4/5; margin-top: 2rem; }
+  .gallery-item:nth-child(3) { aspect-ratio: 4/5; }
+  .gallery-img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: transform 0.6s ease;
+  }
+  .gallery-item:hover .gallery-img { transform: scale(1.04); }
+  .gallery-tag {
+    position: absolute; bottom: 1rem; left: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--white);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+  
+  /* === FOOTER === */
+  .footer {
+    background: var(--ink); color: var(--white);
+    padding: 5rem 2.5rem 2.5rem;
+    position: relative; overflow: hidden;
+  }
+  .footer::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%);
+  }
+  .footer-inner { max-width: 1300px; margin: 0 auto; }
+  .footer-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.3rem, 5.5vw, 5rem);
+    font-weight: 300; line-height: 0.95;
+    letter-spacing: -0.02em; margin-bottom: 1.8rem;
+    max-width: 850px;
+  }
+  .footer-title em { font-style: italic; font-weight: 400; }
+  .footer-subtitle {
+    font-size: 1rem; color: rgba(248,250,251,0.6);
+    max-width: 480px; line-height: 1.6;
+    margin-bottom: 2.5rem; font-weight: 300;
+  }
+  .footer-cta-row {
+    display: flex; gap: 1rem; margin-bottom: 4rem; flex-wrap: wrap;
+  }
+  .footer-cta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.9rem 1.8rem;
+    border: 1px solid var(--white); border-radius: 2px;
+    cursor: pointer; background: transparent;
+    color: var(--white); transition: all 0.3s;
+  }
+  .footer-cta.primary {
+    background: var(--white); color: var(--ink);
+  }
+  .footer-cta:hover {
+    background: var(--accent); border-color: var(--accent); color: var(--white);
+  }
+  .footer-meta {
+    display: flex; justify-content: space-between;
+    align-items: flex-end; padding-top: 2.5rem;
+    border-top: 1px solid rgba(248,250,251,0.12);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; color: rgba(248,250,251,0.5);
+    letter-spacing: 0.1em; flex-wrap: wrap; gap: 2rem;
+  }
+  .footer-meta-block { display: flex; flex-direction: column; gap: 0.35rem; }
+  .footer-meta-label {
+    color: rgba(248,250,251,0.3);
+    text-transform: uppercase; font-size: 0.6rem;
+    letter-spacing: 0.2em;
+  }
+  
+  /* === REVEAL === */
+  [data-reveal] {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  [data-reveal].revealed { opacity: 1; transform: translateY(0); }
+  [data-reveal-delay="1"] { transition-delay: 0.1s; }
+  [data-reveal-delay="2"] { transition-delay: 0.2s; }
+  [data-reveal-delay="3"] { transition-delay: 0.3s; }
+  [data-reveal-delay="4"] { transition-delay: 0.4s; }
+  
+  /* === TOAST === */
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--ink); color: var(--white);
+    padding: 0.9rem 1.4rem; border-radius: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem; letter-spacing: 0.1em;
+    z-index: 1000;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid var(--accent);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--white-warm); }
+  ::-webkit-scrollbar-thumb { background: var(--ink-mid); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    CENA <em>IV</em>
+  </div>
+  <div class="nav-links">
+    <a href="#pillars">Pillars</a>
+    <a href="#world">World</a>
+    <a href="#traversal">Traversal</a>
+    <a href="#dungeons">Dungeons</a>
+    <a href="#gallery">Gallery</a>
+  </div>
+  <button class="nav-cta" onclick="showToast('Wishlist added — survey coordinates logged.')">Wishlist</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <img class="hero-bg-img" src="5.png" alt="Aero Arcology hero background">
+  <div class="hero-overlay"></div>
+  <div class="scan-sweep"></div>
+  
+  <div class="hero-ui">
+    <div class="hero-title-block" data-reveal>
+      <div class="hero-eyebrow">CENA IV / Survey Log 001</div>
+      <h1 class="hero-title">The Aero<br><em>Arcology</em></h1>
+      <p class="hero-subtitle">An endless first-person survey of monumental scale. Glide, grapple, and wander through an infinite procedural world where colossal white megastructures pierce the clouds above silent green meadows.</p>
+    </div>
+    
+    <div class="hero-hud" data-reveal data-reveal-delay="2">
+      <div class="hud-coords">
+        <div class="hud-coords-row"><span>SEED</span><span>0x4F2A8B91</span></div>
+        <div class="hud-coords-row"><span>LAT</span><span id="coord-lat">+47.3829°</span></div>
+        <div class="hud-coords-row"><span>LON</span><span id="coord-lon">-119.0481°</span></div>
+        <div class="hud-coords-row"><span>ALT</span><span id="coord-alt">412m AGL</span></div>
+      </div>
+      <div class="hud-scroll">
+        <span>Descend</span>
+        <div class="hud-scroll-line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PILLARS -->
+<section class="section pillars" id="pillars">
+  <div class="section-inner">
+    <div data-reveal>
+      <div class="section-eyebrow">Core Design Pillars</div>
+      <h2 class="section-title">Four principles that <em>shape every silence.</em></h2>
+      <p class="section-desc">Aero Arcology is not about reaching a destination. It is about the texture of crossing — the humility of standing beneath something that does not notice you.</p>
+    </div>
+    
+    <div class="pillar-grid">
+      <div class="pillar" data-reveal data-reveal-delay="1">
+        <div class="pillar-num">P / 01</div>
+        <h3 class="pillar-title"><em>Overwhelming</em> Scale</h3>
+        <p class="pillar-desc">The world is impossibly large. The player should feel microscopic next to the towering white Arcologies that stretch into the upper atmosphere.</p>
+      </div>
+      <div class="pillar" data-reveal data-reveal-delay="2">
+        <div class="pillar-num">P / 02</div>
+        <h3 class="pillar-title"><em>Active</em> Pacifism</h3>
+        <p class="pillar-desc">No health bars, no combat, no survival pressure. The challenge lies in navigating vertical spaces and mapping the unknown without threat.</p>
+      </div>
+      <div class="pillar" data-reveal data-reveal-delay="3">
+        <div class="pillar-num">P / 03</div>
+        <h3 class="pillar-title"><em>Kinesthetic</em> Joy</h3>
+        <p class="pillar-desc">Movement itself must feel satisfying. Running, sliding, climbing, and soaring should feel fluid and momentum-based.</p>
+      </div>
+      <div class="pillar" data-reveal data-reveal-delay="4">
+        <div class="pillar-num">P / 04</div>
+        <h3 class="pillar-title"><em>Atmospheric</em> Solitude</h3>
+        <p class="pillar-desc">A lonely, contemplative experience. The narrative is told strictly through environmental cues, scale, and soundscapes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORLD / BIOMES -->
+<section class="section world" id="world">
+  <div class="section-inner">
+    <div data-reveal>
+      <div class="section-eyebrow">Procedural World Architecture</div>
+      <h2 class="section-title">An infinite world, <em>seeded and silent.</em></h2>
+      <p class="section-desc">The game world generates endlessly around the player using a seed-based chunk system. Every horizon has never been seen before — and will never be seen again.</p>
+    </div>
+    
+    <div class="biome-grid">
+      <div class="biome" data-reveal data-reveal-delay="1">
+        <img class="biome-img" src="4.png" alt="The Pristine Plains — biome preview">
+        <div class="biome-body">
+          <div class="biome-type">Biome / 01</div>
+          <h3 class="biome-name">The <em>Pristine</em> Plains</h3>
+          <p class="biome-desc">Gently rolling green meadows, low hills, and small rivers. Towering isolated pillars and massive sky-bridges break the horizon.</p>
+          <div class="biome-stats">
+            <div>
+              <div class="biome-stat-label">Density</div>
+              <div class="biome-stat-value">Medium</div>
+            </div>
+            <div>
+              <div class="biome-stat-label">Feature</div>
+              <div class="biome-stat-value">Sky-bridges</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="biome" data-reveal data-reveal-delay="2">
+        <img class="biome-img" src="3.png" alt="The Mist Valleys — biome preview">
+        <div class="biome-body">
+          <div class="biome-type">Biome / 02</div>
+          <h3 class="biome-name">The <em>Mist</em> Valleys</h3>
+          <p class="biome-desc">Deep, shadowed chasms with heavy ground-level fog. Interlocking walls block out the sun; a vertical climbing focus with long echoes.</p>
+          <div class="biome-stats">
+            <div>
+              <div class="biome-stat-label">Density</div>
+              <div class="biome-stat-value">High</div>
+            </div>
+            <div>
+              <div class="biome-stat-label">Feature</div>
+              <div class="biome-stat-value">Vertical Climb</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="biome" data-reveal data-reveal-delay="3">
+        <img class="biome-img" src="5.png" alt="The Sunken Basins — biome preview">
+        <div class="biome-body">
+          <div class="biome-type">Biome / 03</div>
+          <h3 class="biome-name">The <em>Sunken</em> Basins</h3>
+          <p class="biome-desc">Dry, cracked clay basins and low-growing yellow grass. Half-buried, decaying monoliths lean at extreme angles.</p>
+          <div class="biome-stats">
+            <div>
+              <div class="biome-stat-label">Density</div>
+              <div class="biome-stat-value">Low</div>
+            </div>
+            <div>
+              <div class="biome-stat-label">Feature</div>
+              <div class="biome-stat-value">Decay</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="biome" data-reveal data-reveal-delay="4">
+        <img class="biome-img" src="1.png" alt="The High Arcs — biome preview">
+        <div class="biome-body">
+          <div class="biome-type">Biome / 04</div>
+          <h3 class="biome-name">The <em>High</em> Arcs</h3>
+          <p class="biome-desc">Sky-scraping plateaus that put the player level with cloud decks. Densely packed hollow columns with interconnected pathways.</p>
+          <div class="biome-stats">
+            <div>
+              <div class="biome-stat-label">Density</div>
+              <div class="biome-stat-value">Extreme</div>
+            </div>
+            <div>
+              <div class="biome-stat-label">Feature</div>
+              <div class="biome-stat-value">Cloud Decks</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRAVERSAL -->
+<section class="section traversal" id="traversal">
+  <div class="section-inner">
+    <div data-reveal>
+      <div class="section-eyebrow">Traversal Toolkit</div>
+      <h2 class="section-title">Four instruments for <em>crossing the impossible.</em></h2>
+      <p class="section-desc">Each tool extends your reach without ever introducing violence. Movement is the only verb that matters.</p>
+    </div>
+    
+    <div class="tool-grid">
+      <div class="tool" data-reveal data-reveal-delay="1">
+        <div class="tool-icon">
+          <svg viewBox="0 0 32 32">
+            <ellipse cx="16" cy="16" rx="12" ry="7"/>
+            <circle cx="16" cy="16" r="3"/>
+            <line x1="16" y1="3" x2="16" y2="9"/>
+            <line x1="16" y1="23" x2="16" y2="29"/>
+            <line x1="3" y1="16" x2="9" y2="16"/>
+            <line x1="23" y1="16" x2="29" y2="16"/>
+          </svg>
+        </div>
+        <div>
+          <div class="tool-label">Tool / 01</div>
+          <h3 class="tool-name">Surveyor's <em>Visor</em></h3>
+          <p class="tool-desc">A hand-held optical scanner used to identify structure types, measure distance and height, and log unique flora or geological formations.</p>
+        </div>
+      </div>
+      
+      <div class="tool" data-reveal data-reveal-delay="2">
+        <div class="tool-icon">
+          <svg viewBox="0 0 32 32">
+            <path d="M4 22 Q 8 10, 16 12 Q 24 10, 28 22"/>
+            <path d="M4 22 Q 8 16, 16 18 Q 24 16, 28 22" opacity="0.5"/>
+            <line x1="16" y1="12" x2="16" y2="22"/>
+          </svg>
+        </div>
+        <div>
+          <div class="tool-label">Tool / 02</div>
+          <h3 class="tool-name">The <em>Aero-Glider</em></h3>
+          <p class="tool-desc">A deployable physical wing-suit. Falling from massive heights is converted into horizontal flight, letting you sail between towers and drift through clouds.</p>
+        </div>
+      </div>
+      
+      <div class="tool" data-reveal data-reveal-delay="3">
+        <div class="tool-icon">
+          <svg viewBox="0 0 32 32">
+            <path d="M6 26 L 14 18"/>
+            <path d="M14 18 L 22 10"/>
+            <path d="M22 10 L 26 6"/>
+            <path d="M22 10 L 26 14"/>
+            <path d="M22 10 L 18 6"/>
+            <circle cx="26" cy="6" r="2"/>
+          </svg>
+        </div>
+        <div>
+          <div class="tool-label">Tool / 03</div>
+          <h3 class="tool-name">Magnetic <em>Grapple</em></h3>
+          <p class="tool-desc">A tool that anchors to concrete surfaces. Swing across massive hollow interior chasms or pull yourself up sheer vertical walls.</p>
+        </div>
+      </div>
+      
+      <div class="tool" data-reveal data-reveal-delay="4">
+        <div class="tool-icon">
+          <svg viewBox="0 0 32 32">
+            <path d="M8 24 L 8 16 Q 8 12, 12 12 L 18 12 Q 22 12, 22 16 L 22 24"/>
+            <path d="M8 24 L 22 24"/>
+            <path d="M14 12 L 14 8"/>
+            <path d="M22 18 L 26 16"/>
+            <path d="M22 21 L 27 21"/>
+            <path d="M22 24 L 26 26"/>
+          </svg>
+        </div>
+        <div>
+          <div class="tool-label">Tool / 04</div>
+          <h3 class="tool-name">Pneumatic <em>Boots</em></h3>
+          <p class="tool-desc">Sliding down steep green hills builds momentum, which can be converted into a massive forward leap. Every slope is an invitation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DUNGEONS -->
+<section class="section dungeons" id="dungeons">
+  <div class="section-inner">
+    <div data-reveal>
+      <div class="section-eyebrow">The Interior Hollows</div>
+      <h2 class="section-title">Not arenas. <em>Vertical architectural puzzles.</em></h2>
+      <p class="section-desc">Dungeons are enclosed, vertical puzzles found inside the hollow concrete monoliths. Ambient light filters through high skylights, casting dramatic shadows that move with the hour.</p>
+    </div>
+    
+    <div class="dungeon-stage" data-reveal data-reveal-delay="1">
+      <img class="dungeon-img" src="2.png" alt="Hollow Monolith interior — dungeon preview">
+      <div class="dungeon-overlay"></div>
+      <div class="dungeon-info">
+        <div class="dungeon-info-label">Active Survey / Interior</div>
+        <div class="dungeon-info-title">Hollow <em>Monolith Theta-9</em></div>
+        <div class="dungeon-info-desc">A vertical puzzle chamber. Light beams must be aligned to reroute ancient power conduits. Wind turbines below generate updrafts long enough to glide across the central chasm.</div>
+      </div>
+      <div class="dungeon-readout">
+        <div><span>DEPTH</span> 1,240m</div>
+        <div><span>HEIGHT</span> 2,840m</div>
+        <div><span>STATUS</span> Active</div>
+        <div><span>REWARD</span> Aero-Tech Remnant</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="section gallery" id="gallery">
+  <div class="section-inner">
+    <div data-reveal>
+      <div class="section-eyebrow">Survey Log — Visual Records</div>
+      <h2 class="section-title">Field <em>observations.</em></h2>
+      <p class="section-desc">Captured during the first survey cycle. Each frame is a coordinate — each coordinate is an invitation to return.</p>
+    </div>
+    
+    <div class="gallery-grid">
+      <div class="gallery-item" data-reveal data-reveal-delay="1">
+        <img class="gallery-img" src="4.png" alt="Survey frame 001">
+        <div class="gallery-tag">Frame / 001</div>
+      </div>
+      <div class="gallery-item" data-reveal data-reveal-delay="2">
+        <img class="gallery-img" src="1.png" alt="Survey frame 002">
+        <div class="gallery-tag">Frame / 002</div>
+      </div>
+      <div class="gallery-item" data-reveal data-reveal-delay="3">
+        <img class="gallery-img" src="2.png" alt="Survey frame 003">
+        <div class="gallery-tag">Frame / 003</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <h2 class="footer-title" data-reveal>The meadows are <em>endless.</em><br>The giants are <em>waiting.</em></h2>
+    <p class="footer-subtitle" data-reveal data-reveal-delay="1">Aero Arcology is currently in development for PC and Console. Wishlist now to receive survey coordinates on launch.</p>
+    
+    <div class="footer-cta-row" data-reveal data-reveal-delay="2">
+      <button class="footer-cta primary" onclick="showToast('Wishlist active — expedition number 0x4F2A8B91 reserved.')">Wishlist on Steam</button>
+      <button class="footer-cta" onclick="showToast('Survey log copied to clipboard.')">Download Survey Log</button>
+    </div>
+    
+    <div class="footer-meta">
+      <div class="footer-meta-block">
+        <div class="footer-meta-label">Project</div>
+        <div>CENA IV / Aero Arcology</div>
+        <div>Version 1.0</div>
+      </div>
+      <div class="footer-meta-block">
+        <div class="footer-meta-label">Platform</div>
+        <div>PC / Console</div>
+        <div>Atmospheric Exploration</div>
+      </div>
+      <div class="footer-meta-block">
+        <div class="footer-meta-label">Status</div>
+        <div>In Development</div>
+        <div>Build 0.4F2A8B91</div>
+      </div>
+      <div class="footer-meta-block">
+        <div class="footer-meta-label">Seed</div>
+        <div>0x4F2A8B91</div>
+        <div>Endless</div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Notification</div>
+
+<script>
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Reveal on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('revealed');
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+
+  // Live coords simulation
+  let bLat = 47.3829, bLon = -119.0481, bAlt = 412;
+  setInterval(() => {
+    bLat += (Math.random() - 0.5) * 0.0008;
+    bLon += (Math.random() - 0.5) * 0.0008;
+    bAlt = Math.max(380, Math.min(450, bAlt + Math.floor((Math.random() - 0.5) * 4)));
+    const a = document.getElementById('coord-lat');
+    const b = document.getElementById('coord-lon');
+    const c = document.getElementById('coord-alt');
+    if (a) a.textContent = `${bLat >= 0 ? '+' : ''}${bLat.toFixed(4)}°`;
+    if (b) b.textContent = `${bLon >= 0 ? '+' : ''}${bLon.toFixed(4)}°`;
+    if (c) c.textContent = `${bAlt}m AGL`;
+  }, 1800);
+
+  // Toast notification
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3200);
+  }
+  window.showToast = showToast;
+</script>
+
+</body>
+</html>
